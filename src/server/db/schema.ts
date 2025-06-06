@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { index, pgTableCreator, primaryKey } from "drizzle-orm/pg-core";
+import { index, pgEnum, pgTableCreator, primaryKey } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -8,29 +8,35 @@ import { type AdapterAccount } from "next-auth/adapters";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator((name) => `cashier-app_${name}`);
+export const createTable = pgTableCreator((name) => `ca_${name}`);
 
-export const posts = createTable(
-  "post",
-  (d) => ({
-    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: d.varchar({ length: 256 }),
-    createdById: d
-      .varchar({ length: 255 })
-      .notNull()
-      .references(() => users.id),
-    createdAt: d
-      .timestamp({ withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
-  }),
-  (t) => [
-    index("created_by_idx").on(t.createdById),
-    index("name_idx").on(t.name),
-  ]
-);
+// ========= Enums ========= //
+export const userRole = pgEnum("userRole", ["STOREONE", "STORETWO", "ADMIN"]);
+export const employmentStatus = pgEnum("employmentStatus", [
+  "EMPLOYED",
+  "PENDING",
+  "RESIGN",
+]);
+export const orderStatus = pgEnum("orderStatus", [
+  "SUCCESS",
+  "PROCESS",
+  "PENDING",
+  "FAILED",
+]);
+export const paymentStatus = pgEnum("paymentStatus", [
+  "PAID",
+  "PENDING",
+  "FAILED",
+]);
 
+/**
+ * =========================== User Data ===========================
+ * This is for store every user data including :
+ *  - data employee
+ *  - sessions
+ *  - account
+ *  - clocking
+ */
 export const users = createTable("user", (d) => ({
   id: d
     .varchar({ length: 255 })
@@ -38,18 +44,25 @@ export const users = createTable("user", (d) => ({
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: d.varchar({ length: 255 }),
-  email: d.varchar({ length: 255 }).notNull(),
+  username: d.varchar({ length: 255 }).unique().notNull(),
+  role: userRole("role").default("STOREONE").notNull(),
+  image: d.varchar({ length: 255 }),
+  password: d.varchar({ length: 255 }),
+  phone: d.varchar({ length: 255 }),
+  status: employmentStatus("status").default("EMPLOYED").notNull(),
+  email: d.varchar({ length: 255 }),
   emailVerified: d
     .timestamp({
       mode: "date",
       withTimezone: true,
     })
     .default(sql`CURRENT_TIMESTAMP`),
-  image: d.varchar({ length: 255 }),
 }));
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
+  clockings: many(clocking),
+  orders: many(order),
 }));
 
 export const accounts = createTable(
@@ -73,7 +86,7 @@ export const accounts = createTable(
   (t) => [
     primaryKey({ columns: [t.provider, t.providerAccountId] }),
     index("account_user_id_idx").on(t.userId),
-  ]
+  ],
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -90,7 +103,7 @@ export const sessions = createTable(
       .references(() => users.id),
     expires: d.timestamp({ mode: "date", withTimezone: true }).notNull(),
   }),
-  (t) => [index("t_user_id_idx").on(t.userId)]
+  (t) => [index("t_user_id_idx").on(t.userId)],
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -104,5 +117,216 @@ export const verificationTokens = createTable(
     token: d.varchar({ length: 255 }).notNull(),
     expires: d.timestamp({ mode: "date", withTimezone: true }).notNull(),
   }),
-  (t) => [primaryKey({ columns: [t.identifier, t.token] })]
+  (t) => [primaryKey({ columns: [t.identifier, t.token] })],
 );
+
+export const clocking = createTable("clocking", (d) => ({
+  id: d
+    .varchar({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  start: d.timestamp({ mode: "date", withTimezone: true }),
+  end: d.timestamp({ mode: "date", withTimezone: true }),
+  date: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  totalHour: d.timestamp({ mode: "string" }),
+  userId: d
+    .varchar({ length: 255 })
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+}));
+
+export const clockingRelations = relations(clocking, ({ one }) => ({
+  user: one(users, {
+    fields: [clocking.userId],
+    references: [users.id],
+  }),
+}));
+
+/**
+ * ======================== Store data ==========================
+ *
+ * Storing data product and services :
+ *  - category
+ *  - Product store 1
+ *  - Service store 2
+ */
+export const category = createTable("category", (d) => ({
+  id: d
+    .varchar({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: d.varchar({ length: 255 }),
+  createdAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+}));
+
+export const categoryRelations = relations(category, ({ many }) => ({
+  products: many(product),
+}));
+
+export const product = createTable("product", (d) => ({
+  id: d
+    .varchar({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: d.varchar({ length: 255 }).notNull(),
+  description: d.varchar({ length: 255 }),
+  image: d.varchar({ length: 255 }),
+  isPublished: d.boolean().default(true),
+  price: d.numeric({ precision: 15, scale: 0 }).notNull(),
+  quantity: d.integer().default(0),
+  categoryId: d
+    .varchar({ length: 255 })
+    .references(() => category.id, { onDelete: "set null" }),
+  createdAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+}));
+
+export const productRelations = relations(product, ({ one, many }) => ({
+  category: one(category, {
+    fields: [product.categoryId],
+    references: [category.id],
+  }),
+  inventories: many(inventory),
+  orders: many(productToOrder),
+}));
+
+export const inventory = createTable("inventory", (d) => ({
+  id: d
+    .varchar({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  isPlus: d.boolean().default(true),
+  amount: d.integer().notNull(),
+  productId: d
+    .varchar({ length: 255 })
+    .notNull()
+    .references(() => product.id, { onDelete: "cascade" }),
+  createdAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+}));
+
+export const inventoryRelations = relations(inventory, ({ one }) => ({
+  product: one(product, {
+    fields: [inventory.productId],
+    references: [product.id],
+  }),
+}));
+
+export const service = createTable("service", (d) => ({
+  id: d
+    .varchar({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: d.varchar({ length: 255 }).notNull(),
+  description: d.varchar({ length: 255 }),
+  isPublished: d.boolean().default(true),
+  price: d.numeric({ precision: 15, scale: 0 }).notNull(),
+  createdAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+}));
+
+export const serviceRelations = relations(service, ({ many }) => ({
+  orders: many(order),
+}));
+
+/**
+ * ======================== Transaction data ===========================
+ *
+ * Storing data product and services :
+ *  - transaction
+ *  - order
+ *  - invoice
+ */
+export const order = createTable("order", (d) => ({
+  id: d
+    .varchar({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: d.varchar({ length: 255 }).notNull(),
+  status: orderStatus("status").default("PROCESS").notNull(),
+  payment: paymentStatus("payment").default("PAID"),
+  totalPrice: d.numeric({ precision: 15, scale: 0 }).notNull(),
+  method: d.varchar({ length: 255 }),
+  userId: d
+    .varchar({ length: 255 })
+    .references(() => users.id, { onDelete: "set null" }),
+  serviceId: d
+    .varchar({ length: 255 })
+    .references(() => service.id, { onDelete: "set null" }),
+  createdAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: d
+    .timestamp({ mode: "date", withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+}));
+
+export const orderRelations = relations(order, ({ one, many }) => ({
+  user: one(users, {
+    fields: [order.userId],
+    references: [users.id],
+  }),
+  products: many(productToOrder),
+}));
+
+export const productToOrder = createTable(
+  "productToOrder",
+  (d) => ({
+    productId: d
+      .varchar({ length: 255 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    orderId: d
+      .varchar({ length: 255 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  }),
+  (t) => [primaryKey({ columns: [t.productId, t.orderId] })],
+);
+
+export const productToOrderRelations = relations(productToOrder, ({ one }) => ({
+  product: one(product, {
+    fields: [productToOrder.productId],
+    references: [product.id],
+  }),
+  order: one(order, {
+    fields: [productToOrder.orderId],
+    references: [order.id],
+  }),
+}));
