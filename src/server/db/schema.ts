@@ -302,6 +302,10 @@ export const orderRelations = relations(order, ({ one, many }) => ({
     fields: [order.userId],
     references: [users.id],
   }),
+  service: one(service, {
+    fields: [order.serviceId],
+    references: [service.id],
+  }),
   products: many(productToOrder),
 }));
 
