@@ -4,7 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
@@ -79,6 +80,7 @@
   --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
+  --header-height: calc(var(--spacing) * 12 + 1px);
 }
 
 .dark {
@@ -115,11 +117,108 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+.theme-scaled {
+  @media (min-width: 1024px) {
+    --radius: 0.6rem;
+    --text-lg: 1.05rem;
+    --text-base: 0.85rem;
+    --text-sm: 0.8rem;
+    --spacing: 0.222222rem;
+  }
+
+  [data-slot="card"] {
+    --spacing: 0.16rem;
+  }
+
+  [data-slot="select-trigger"],
+  [data-slot="toggle-group-item"] {
+    --spacing: 0.222222rem;
+  }
+}
+
+.theme-default,
+.theme-default-scaled {
+  --primary: var(--color-neutral-600);
+  --primary-foreground: var(--color-neutral-50);
+
+  @variant dark {
+    --primary: var(--color-neutral-500);
+    --primary-foreground: var(--color-neutral-50);
+  }
+}
+
+.theme-blue,
+.theme-blue-scaled {
+  --primary: var(--color-blue-600);
+  --primary-foreground: var(--color-blue-50);
+
+  @variant dark {
+    --primary: var(--color-blue-500);
+    --primary-foreground: var(--color-blue-50);
+  }
+}
+
+.theme-green,
+.theme-green-scaled {
+  --primary: var(--color-lime-600);
+  --primary-foreground: var(--color-lime-50);
+
+  @variant dark {
+    --primary: var(--color-lime-600);
+    --primary-foreground: var(--color-lime-50);
+  }
+}
+
+.theme-amber,
+.theme-amber-scaled {
+  --primary: var(--color-amber-600);
+  --primary-foreground: var(--color-amber-50);
+
+  @variant dark {
+    --primary: var(--color-amber-500);
+    --primary-foreground: var(--color-amber-50);
+  }
+}
+
+.theme-mono,
+.theme-mono-scaled {
+  --font-sans: var(--font-mono);
+  --primary: var(--color-neutral-600);
+  --primary-foreground: var(--color-neutral-50);
+
+  @variant dark {
+    --primary: var(--color-neutral-500);
+    --primary-foreground: var(--color-neutral-50);
+  }
+
+  .rounded-xs,
+  .rounded-sm,
+  .rounded-md,
+  .rounded-lg,
+  .rounded-xl {
+    @apply !rounded-none;
+    border-radius: 0;
+  }
+
+  .shadow-xs,
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl {
+    @apply !shadow-none;
+  }
+
+  [data-slot="toggle-group"],
+  [data-slot="toggle-group-item"] {
+    @apply !rounded-none !shadow-none;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overscroll-none;
   }
 }
