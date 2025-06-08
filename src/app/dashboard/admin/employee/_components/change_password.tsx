@@ -5,10 +5,8 @@ import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type z } from "zod";
-import { Button } from "~/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -20,27 +18,20 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { UpdateCategorySchema } from "~/server/validator/category";
+import { ChangePasswordSchema } from "~/server/validator/auth";
 import { api } from "~/trpc/react";
 
-const UpdateButton = ({
-  categoryId,
-  name,
-}: {
-  categoryId: string;
-  name: string;
-}) => {
-  const context = api.useUtils();
-
-  const createCategory = api.adminRoute.category.update.useMutation({
-    async onSuccess() {
+const ChangePassword = ({ employeeId }: { employeeId: string }) => {
+  const changePw = api.adminRoute.employee.changePassword.useMutation({
+    onSuccess() {
       toast("Success", {
-        description: "Success updating category",
+        description:
+          "Password succesfully changed. Please login with new password",
       });
-      await context.adminRoute.category.getAll.invalidate();
     },
     onError(error) {
       toast("Error", {
@@ -49,19 +40,19 @@ const UpdateButton = ({
     },
   });
 
-  const form = useForm<z.infer<typeof UpdateCategorySchema>>({
-    resolver: zodResolver(UpdateCategorySchema),
+  const form = useForm<z.infer<typeof ChangePasswordSchema>>({
+    resolver: zodResolver(ChangePasswordSchema),
     defaultValues: {
-      id: categoryId,
-      name: name,
+      password: "",
+      id: employeeId,
     },
   });
 
-  const { isSubmitting } = form.formState;
+  async function onSubmit(values: z.infer<typeof ChangePasswordSchema>) {
+    changePw.mutate(values);
+  }
 
-  const onSubmit = (values: z.infer<typeof UpdateCategorySchema>) => {
-    createCategory.mutate(values);
-  };
+  const { isSubmitting } = form.formState;
 
   return (
     <>
@@ -69,30 +60,32 @@ const UpdateButton = ({
         <DialogTrigger asChild>
           <div className="hover:bg-accent relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none">
             <Pencil className="mr-2 h-4 w-4" />
-            Edit
+            Change password
           </div>
         </DialogTrigger>
-        <DialogContent className="scrollbar-hide max-h-[90vh] overflow-auto overflow-y-scroll sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Update Category</DialogTitle>
+            <DialogTitle>Change Password</DialogTitle>
             <DialogDescription>
-              Updating category for products
+              Change password for this employee
             </DialogDescription>
           </DialogHeader>
-
-          {/* Forms Registration */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              {/* Message Form */}
+            <form
+              className="space-y-6"
+              onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
+            >
               <FormField
                 control={form.control}
-                name="name"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>New Password</FormLabel>
                     <FormControl>
                       <Input
-                        disabled={isSubmitting}
-                        placeholder="e.g. 'Technology'"
+                        type="password"
+                        placeholder="Employee new password"
+                        autoComplete="current-password"
                         {...field}
                       />
                     </FormControl>
@@ -100,9 +93,16 @@ const UpdateButton = ({
                   </FormItem>
                 )}
               />
-              <DialogClose asChild>
-                <Button type="submit">Update</Button>
-              </DialogClose>
+
+              <div className="mt-5">
+                <button
+                  type="submit"
+                  className="bg-primary w-full rounded-lg p-2 text-white"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Processing.." : "Change"}
+                </button>
+              </div>
             </form>
           </Form>
         </DialogContent>
@@ -111,4 +111,4 @@ const UpdateButton = ({
   );
 };
 
-export default UpdateButton;
+export default ChangePassword;

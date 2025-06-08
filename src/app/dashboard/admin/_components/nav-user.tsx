@@ -3,6 +3,7 @@
 import { IconDotsVertical, IconLogout } from "@tabler/icons-react";
 
 import type { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   DropdownMenu,
@@ -75,7 +76,14 @@ export function NavUser({ session }: { session: Session | null }) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                signOut({
+                  redirect: true,
+                  redirectTo: "/",
+                })
+              }
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>

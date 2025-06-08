@@ -69,7 +69,7 @@ const CreateButton = () => {
           <DialogHeader>
             <DialogTitle>Create Category</DialogTitle>
             <DialogDescription>
-              Creating category for course and mentoring
+              Creating category for products
             </DialogDescription>
           </DialogHeader>
 
