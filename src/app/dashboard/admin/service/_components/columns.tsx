@@ -1,6 +1,6 @@
 "use client";
 
-import { IconLoader, IconUserX } from "@tabler/icons-react";
+import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
@@ -13,13 +13,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { currencyFormatter } from "~/lib/utils";
 import { type RouterOutputs } from "~/trpc/react";
 import UpdateButton from "./update_button";
-import ChangePassword from "./change_password";
 import DeleteButton from "./delete_button";
 
 export const columns: ColumnDef<
-  RouterOutputs["adminRoute"]["employee"]["getAll"][number]
+  RouterOutputs["adminRoute"]["service"]["getAll"][number]
 >[] = [
   {
     accessorKey: "name",
@@ -29,91 +29,37 @@ export const columns: ColumnDef<
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          Service Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
   {
-    accessorKey: "email",
+    accessorKey: "isPublished",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Employment Status
+          Publicity
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      let status = "";
-
-      if (row.original.status === "EMPLOYED") {
-        status = "Employed";
-      } else if (row.original.status === "PENDING") {
-        status = "Pending";
-      } else {
-        status = "Resign";
-      }
-
-      return (
-        <div className="w-32">
-          <Badge variant="outline" className="text-muted-foreground px-1.5">
-            {status}
-          </Badge>
-        </div>
-      );
-    },
-  },
-  {
-    id: "clocking",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Clocking
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      let clockingStatus;
-      if (row.original.clockings.length !== 0) {
-        clockingStatus = true;
-      } else {
-        clockingStatus = false;
-      }
-
       return (
         <Badge variant="outline" className="text-muted-foreground px-1.5">
-          {clockingStatus ? (
+          {row.original.isPublished ? (
             <>
-              <IconLoader className="fill-green-500 dark:fill-green-400" />
-              Active
+              <IconEye className="text-green-500 dark:text-green-400" />
+              Published
             </>
           ) : (
             <>
-              <IconUserX />
-              Inactive
+              <IconEyeOff />
+              Hidden
             </>
           )}
         </Badge>
@@ -121,10 +67,30 @@ export const columns: ColumnDef<
     },
   },
   {
+    accessorKey: "price",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Price
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const formattedPrice = currencyFormatter.format(
+        Number(row.original.price),
+      );
+
+      return <div>{formattedPrice}</div>;
+    },
+  },
+  {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -135,10 +101,9 @@ export const columns: ColumnDef<
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
-              <DropdownMenuLabel>Employee Actions</DropdownMenuLabel>
+              <DropdownMenuLabel>Service Actions</DropdownMenuLabel>
               <UpdateButton data={row.original} />
-              <ChangePassword employeeId={row.original.id} />
-              <DeleteButton employeeId={row.original.id} />
+              <DeleteButton serviceId={row.original.id} />
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
