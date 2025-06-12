@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import "uploadthing/tw/v4";
+@source "../node_modules/@uploadthing/react/dist";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -220,5 +223,14 @@
   }
   body {
     @apply bg-background text-foreground overscroll-none;
+  }
+}
+
+@layer components{
+  .quill-preview{
+    @apply text-base
+  }
+  .quill-preview > ol {
+    @apply list-disc ml-5
   }
 }

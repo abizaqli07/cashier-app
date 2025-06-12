@@ -182,7 +182,7 @@ export const product = createTable("product", (d) => ({
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: d.varchar({ length: 255 }).notNull(),
-  description: d.varchar({ length: 255 }),
+  description: d.text(),
   image: d.varchar({ length: 255 }),
   isPublished: d.boolean().default(true),
   price: d.numeric({ precision: 15, scale: 0 }).notNull(),
@@ -245,7 +245,7 @@ export const service = createTable("service", (d) => ({
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: d.varchar({ length: 255 }).notNull(),
-  description: d.varchar({ length: 255 }),
+  description: d.text(),
   isPublished: d.boolean().default(true),
   price: d.numeric({ precision: 15, scale: 0 }).notNull(),
   createdAt: d
