@@ -1,29 +1,23 @@
 "use client";
 
-import { IconEye, IconEyeClosed, IconPlus } from "@tabler/icons-react";
+import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import Image from "next/image";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { currencyFormatter } from "~/lib/utils";
 import { api } from "~/trpc/react";
-import { DataTable } from "./data-table";
+import AddQuantity from "./add_quantity";
 import { columns } from "./columns";
+import { DataTable } from "./data-table";
+import UpdateButton from "./update_button";
 
 const ProductDetail = ({ productId }: { productId: string }) => {
   const [data] = api.adminRoute.product.getOne.useSuspenseQuery({
     id: productId,
   });
+  const [category] = api.adminRoute.category.getAll.useSuspenseQuery();
 
-  const inventory = data?.inventories
-
-  if (inventory === undefined) {
-    <div className="flex h-[200px] w-full items-center justify-center rounded-lg border-2 border-dotted px-24 py-4 text-center">
-      <div className="text-2xl font-semibold">
-        Something wrong on the server
-      </div>
-    </div>;
-  }
+  const inventory = data?.inventories;
 
   return (
     <div className="flex flex-col items-center justify-center px-4 lg:px-6">
@@ -42,6 +36,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                   </>
                 )}
               </div>
+              <UpdateButton data={data} categories={category} />
+
               <div className="relative">
                 <div className="relative aspect-square h-full w-full">
                   <Image
@@ -75,9 +71,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 </div>
                 <div className="mt-8 flex items-center justify-between gap-4">
                   <div className="text-3xl font-bold">{data?.quantity}</div>
-                  <Button size={"lg"}>
-                    Add Quantity <IconPlus />
-                  </Button>
+                  <AddQuantity productId={productId} />
                 </div>
               </div>
             </CardContent>

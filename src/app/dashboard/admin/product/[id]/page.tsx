@@ -7,9 +7,11 @@ const ProductDetailPage = async ({
   params: Promise<{ id: string }>;
 }) => {
   const { id } = await params;
+  
   void api.adminRoute.product.getOne.prefetch({
     id,
   });
+  void api.adminRoute.category.getAll.prefetch()
 
   return (
     <div className="@container/main flex flex-1 flex-col gap-2">

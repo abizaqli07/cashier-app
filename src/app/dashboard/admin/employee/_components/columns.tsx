@@ -1,6 +1,6 @@
 "use client";
 
-import { IconLoader, IconUserX } from "@tabler/icons-react";
+import { IconBuildingStore, IconLoader, IconUserX } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
@@ -121,10 +121,42 @@ export const columns: ColumnDef<
     },
   },
   {
+    id: "store",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Store
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      let storeType;
+      if (row.original.role === "STOREONE") {
+        storeType = "Store 1";
+      } else if (row.original.role === "STORETWO") {
+        storeType = "Store 2";
+      } else {
+        storeType = "Admin";
+      }
+
+      return (
+        <Badge variant="outline" className="text-muted-foreground px-1.5">
+          <>
+            <IconBuildingStore />
+            {storeType}
+          </>
+        </Badge>
+      );
+    },
+  },
+  {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -1,7 +1,7 @@
 "use client";
 
-import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -17,7 +17,7 @@ type inventories = {
 
 export const columns: ColumnDef<inventories>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "isPlus",
     header: ({ column }) => {
       return (
         <Button
@@ -30,7 +30,11 @@ export const columns: ColumnDef<inventories>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{row.original.isPlus ? "Plus" : "Minus"}</div>;
+      return (
+        <div className="font-semibold">
+          {row.original.isPlus ? "Plus" : "Minus"}
+        </div>
+      );
     },
   },
   {
@@ -48,9 +52,10 @@ export const columns: ColumnDef<inventories>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div>
-          {row.original.isPlus ? <IconPlus /> : <IconMinus />}{" "}
-          {row.original.amount}
+        <div
+          className={`flex items-center gap-2 text-lg font-semibold ${row.original.isPlus ? "text-green-400" : "text-red-500"}`}
+        >
+          {row.original.isPlus ? "+" : "-"} {row.original.amount}
         </div>
       );
     },
@@ -69,7 +74,8 @@ export const columns: ColumnDef<inventories>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{row.original.createdAt.toLocaleDateString()}</div>;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      return <div>{format(row.original.createdAt, "dd MMMM yyyy")}</div>;
     },
   },
 ];
