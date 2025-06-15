@@ -1,8 +1,7 @@
 "use client";
 
-import { IconPencil } from "@tabler/icons-react";
+import { IconCirclePlusFilled } from "@tabler/icons-react";
 import Image from "next/image";
-import Link from "next/link";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -12,15 +11,18 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import type { CartProduct } from "~/components/ui/cart";
 import { currencyFormatter } from "~/lib/utils";
 import type { RouterOutputs } from "~/trpc/react";
-import DeleteButton from "./delete_button";
 
 interface ProductCardProps {
-  product: RouterOutputs["adminRoute"]["product"]["getAll"]["products"][number];
+  product: RouterOutputs["employeeRoute"]["product"]["getAll"]["products"][number];
+  handleAddProduct: (data: CartProduct) => void;
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, handleAddProduct }: ProductCardProps) => {
+  const available = product.quantity !== 0;
+
   return (
     <Card key={product.id} className="flex flex-col justify-between p-2">
       <CardHeader className="relative p-0">
@@ -46,14 +48,25 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </p>
       </CardContent>
       <CardFooter className="flex justify-between pb-4">
-        <div className="font-semibold">{product.quantity ?? 0}</div>
+        <div className={`font-light ${available ? "" : "text-red-400"}`}>
+          {available ? "Product available" : "*Out of stock"}
+        </div>
         <div className="space-x-2">
-          <Link href={`/dashboard/admin/product/${product.id}`}>
-            <Button variant={"outline"}>
-              <IconPencil className="text- size-4" />
-            </Button>
-          </Link>
-          <DeleteButton productId={product.id} />
+          <Button
+            size={"icon"}
+            disabled={!available}
+            onClick={() =>
+              handleAddProduct({
+                id: product.id,
+                imageUrl: product.image ?? "/images/placeholder_product.webp",
+                name: product.name,
+                price: parseInt(product.price),
+                quantity: 1,
+              })
+            }
+          >
+            <IconCirclePlusFilled className="size-8" />
+          </Button>
         </div>
       </CardFooter>
     </Card>
