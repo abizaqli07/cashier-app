@@ -41,7 +41,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
               <div className="relative">
                 <div className="relative aspect-square h-full w-full">
                   <Image
-                    src={data?.image ?? ""}
+                    src={data?.image ?? "/images/placeholder_product.webp"}
                     alt="Image"
                     fill
                     className="absolute inset-0 object-cover dark:brightness-[0.2] dark:grayscale"

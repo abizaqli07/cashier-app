@@ -6,14 +6,14 @@ import { AppSidebar } from "./_components/app-sidebar";
 import { SiteHeader } from "./_components/site-header";
 import { api } from "~/trpc/server";
 
-const StoreOneDashboardLayout = async ({ children }: { children: ReactNode }) => {
+const StoreTwoDashboardLayout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   
   void api.employeeRoute.clocking.getOne.prefetch()
 
-  if (!session || session?.user.role !== "STOREONE") {
+  if (!session || session?.user.role !== "STORETWO") {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <div className="text-2xl">
@@ -41,4 +41,4 @@ const StoreOneDashboardLayout = async ({ children }: { children: ReactNode }) =>
   );
 };
 
-export default StoreOneDashboardLayout;
+export default StoreTwoDashboardLayout;

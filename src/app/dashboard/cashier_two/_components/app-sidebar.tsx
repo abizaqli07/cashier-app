@@ -29,22 +29,22 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/dashboard/cashier_one",
+      url: "/dashboard/cashier_two",
       icon: IconDashboard,
     },
     {
       title: "Order",
-      url: "/dashboard/cashier_one/order",
+      url: "/dashboard/cashier_two/order",
       icon: IconBuildingStore,
     },
     {
       title: "Transactions",
-      url: "/dashboard/cashier_one/transaction",
+      url: "/dashboard/cashier_two/transaction",
       icon: IconChartBar,
     },
     {
       title: "Clocking",
-      url: "/dashboard/cashier_one/clocking",
+      url: "/dashboard/cashier_two/clocking",
       icon: IconStopwatch,
     },
   ],

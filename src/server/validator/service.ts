@@ -6,6 +6,12 @@ export const ServiceIdSchema = z.object({
   }),
 });
 
+export const ServiceFilterSchema = z.object({
+  page: z.number(),
+  totalItems: z.number(),
+  search: z.string().nullable(),
+});
+
 export const CreateServiceSchema = z.object({
   name: z.string().min(1, {
     message: "Name required for service",

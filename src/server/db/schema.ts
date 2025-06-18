@@ -126,13 +126,13 @@ export const clocking = createTable("clocking", (d) => ({
     .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  start: d.timestamp({ mode: "date", withTimezone: true }),
+  start: d.timestamp({ mode: "date", withTimezone: true }).notNull(),
   end: d.timestamp({ mode: "date", withTimezone: true }),
   date: d
     .timestamp({ mode: "date", withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  totalHour: d.timestamp({ mode: "string" }),
+  totalHour: d.integer(),
   userId: d
     .varchar({ length: 255 })
     .notNull()
@@ -315,11 +315,11 @@ export const productToOrder = createTable(
     productId: d
       .varchar({ length: 255 })
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => product.id, { onDelete: "cascade" }),
     orderId: d
       .varchar({ length: 255 })
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => order.id, { onDelete: "cascade" }),
   }),
   (t) => [primaryKey({ columns: [t.productId, t.orderId] })],
 );

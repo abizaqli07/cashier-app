@@ -5,7 +5,18 @@ import { Loader2, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { Button } from "~/components/ui/button";
 import QuantityInputBasic from "~/components/ui/quantity-input";
+import { Input } from "./input";
+import { Label } from "./label";
 import PriceFormat from "./price-format";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
 
 // Default logo placeholder
 const DEFAULT_LOGO = "/logo.webp";
@@ -22,6 +33,8 @@ interface CartProduct {
 // Cart checkout payload interface
 interface CartCheckoutPayload {
   products: CartProduct[];
+  customer: string;
+  method: string;
   subtotal: number;
   shippingCost: number;
   vatAmount: number;
@@ -41,10 +54,14 @@ interface CartProps {
   currencyPrefix?: string;
   isLoading?: boolean;
   errorMessage?: string;
+  customer?: string;
+  method?: string;
   onCheckout?: (payload: CartCheckoutPayload) => void;
   onContinueShopping?: (payload: CartCheckoutPayload) => void;
   onUpdateQuantity?: (productId: string, newQuantity: number) => void;
   onRemoveProduct?: (productId: string) => void;
+  onCustomerChange?: (name: string) => void;
+  onMethodChange?: (method: string) => void;
 }
 
 function Cart({
@@ -56,7 +73,11 @@ function Cart({
   onContinueShopping = () => {},
   onRemoveProduct = () => {},
   onUpdateQuantity = () => {},
+  onCustomerChange = () => {},
+  onMethodChange = () => {},
   products,
+  method = "Cash",
+  customer = "",
   shippingCost = 0,
   storeName = "TechGadgets",
   subtotal = 0,
@@ -77,6 +98,8 @@ function Cart({
     totalAmount,
     vatAmount,
     vatRate,
+    customer,
+    method,
   };
 
   return (
@@ -114,6 +137,42 @@ function Cart({
         </div>
       )}
 
+      {!isLoading && !errorMessage && !isCartEmpty && (
+        <div className="bg-gray-50 p-6 dark:bg-gray-800/50">
+          <div className="w-full space-y-2 sm:max-w-sm">
+            <Label htmlFor="customer">Customer Name</Label>
+            <Input
+              type="text"
+              id="customer"
+              placeholder="Name"
+              onChange={(event) => onCustomerChange(event.target.value)}
+            />
+            {customer.length < 1 && (
+              <p className="text-destructive text-sm">*required</p>
+            )}
+          </div>
+
+          <div className="mt-6 space-y-2">
+            <Label>Payment Method</Label>
+            <Select
+              onValueChange={(value) => onMethodChange(value)}
+              defaultValue={method}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select payment Method" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Method</SelectLabel>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                  <SelectItem value="Qris">Qris</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
+
       {/* Cart Items or Empty Cart Message */}
       {!isLoading &&
         !errorMessage &&
@@ -126,7 +185,7 @@ function Cart({
               />
             </div>
             <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Your shopping cart is empty
+              Your order cart is empty
             </h2>
             <p className="mb-6 text-gray-600 dark:text-gray-400">
               Looks like you haven&apos;t added any items to your cart yet.
@@ -135,7 +194,7 @@ function Cart({
               onClick={() => onContinueShopping(checkoutPayload)}
               className="bg-primary hover:bg-primary/80 text-white transition-all"
             >
-              Start Shopping
+              Start Add Product
             </Button>
           </div>
         ) : (
@@ -250,18 +309,9 @@ function Cart({
             <Button
               onClick={() => onCheckout(checkoutPayload)}
               className="bg-primary hover:bg-primary/80 w-full text-white transition-all"
-              disabled={isLoading}
+              disabled={isLoading || customer.length < 1}
             >
-              Proceed to Checkout
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => onContinueShopping(checkoutPayload)}
-              className="hover:border-primary hover:text-primary dark:hover:border-primary w-full border-gray-300 bg-white text-gray-800 transition-all hover:bg-blue-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-              disabled={isLoading}
-            >
-              Continue Shopping
+              Proceed to Order
             </Button>
           </div>
         </div>
@@ -272,3 +322,4 @@ function Cart({
 
 export default Cart;
 export type { CartCheckoutPayload, CartProduct, CartProps };
+

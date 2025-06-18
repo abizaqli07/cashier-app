@@ -1,9 +1,7 @@
 import { TRPCError } from "@trpc/server";
-import { count, desc, ilike } from "drizzle-orm";
+import { and, count, desc, eq, ilike } from "drizzle-orm";
 import { product } from "~/server/db/schema";
-import {
-  ProductFilterSchema
-} from "~/server/validator/product";
+import { ProductFilterSchema } from "~/server/validator/product";
 import { createTRPCRouter, protectedProcedure } from "../../trpc";
 
 export const productRouter = createTRPCRouter({
@@ -21,15 +19,25 @@ export const productRouter = createTRPCRouter({
           with: {
             category: true,
           },
-          where: (product, { ilike }) =>
-            input.search ? ilike(product.name, `%${input.search}%`) : undefined,
+          where: (product, { ilike, and, eq }) =>
+            and(
+              input.search
+                ? ilike(product.name, `%${input.search}%`)
+                : undefined,
+              eq(product.isPublished, true),
+            ),
         });
 
         const [total] = await ctx.db
           .select({ count: count() })
           .from(product)
           .where(
-            input.search ? ilike(product.name, `%${input.search}%`) : undefined,
+            and(
+              input.search
+                ? ilike(product.name, `%${input.search}%`)
+                : undefined,
+              eq(product.isPublished, true),
+            ),
           );
 
         const totalPages = Math.ceil((total?.count ?? 1) / limit);

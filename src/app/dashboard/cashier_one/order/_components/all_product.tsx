@@ -14,7 +14,7 @@ import { type RouterOutputs } from "~/trpc/react";
 import ProductCard from "./product_card";
 
 import { IconShoppingCart } from "@tabler/icons-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import Cart, {
   type CartCheckoutPayload,
@@ -57,7 +57,6 @@ const AllProduct = ({
   const [subtotal, setSubtotal] = useState<number>(0);
   const [shippingCost] = useState<number>(0);
   const [vatRate] = useState<number>(0);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Calculate subtotal whenever the products change
   useEffect(() => {
@@ -67,12 +66,6 @@ const AllProduct = ({
     );
     setSubtotal(newSubtotal ?? 0);
   }, [products]);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
 
   // Handler to update product quantity
   const handleUpdateQuantity = (productId: string, newQuantity: number) => {
@@ -103,8 +96,7 @@ const AllProduct = ({
   const handleCheckout = (payload: CartCheckoutPayload) => {
     const itemCount = payload.products.reduce((sum, p) => sum + p.quantity, 0);
     window.alert(
-      `Proceeding to checkout with ${itemCount} items.\nTotal: ${payload.currencyPrefix}${payload.totalAmount.toFixed(2)}
-        `,
+      `Proceeding to checkout with ${itemCount} items.\nTotal: ${payload.currencyPrefix}${payload.totalAmount.toFixed(2)} `,
     );
   };
 
@@ -112,7 +104,6 @@ const AllProduct = ({
     <div className="px-4 lg:px-6">
       <div className="flex items-center justify-between py-4">
         <Input
-          ref={inputRef}
           className="mr-2 max-w-sm"
           placeholder="Search"
           value={valueSearch}
