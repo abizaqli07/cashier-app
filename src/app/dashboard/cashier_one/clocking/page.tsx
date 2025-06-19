@@ -1,7 +1,9 @@
+export const dynamic = "force-dynamic";
+
 import { api, HydrateClient } from "~/trpc/server";
 import AllClocking from "./_components/all_clocking";
 
-const CategoryPage = async () => {
+const ClockingStoreOnePage = async () => {
   void api.employeeRoute.clocking.getAll.prefetch();
 
   return (
@@ -15,4 +17,4 @@ const CategoryPage = async () => {
   );
 };
 
-export default CategoryPage;
+export default ClockingStoreOnePage;

@@ -1,7 +1,9 @@
+export const dynamic = "force-dynamic";
+
 import { api, HydrateClient } from "~/trpc/server";
 import AllOrder from "./_components/all_order";
 
-const OrderPage = async () => {
+const OrderStoreTwoPage = async () => {
   void api.employeeRoute.service.getAll.prefetch();
   return (
     <HydrateClient>
@@ -14,4 +16,4 @@ const OrderPage = async () => {
   );
 };
 
-export default OrderPage;
+export default OrderStoreTwoPage;

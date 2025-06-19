@@ -48,8 +48,8 @@ export default function CartOrder() {
   const [subtotal, setSubtotal] = useState<number>(0);
   const [shippingCost] = useState<number>(0);
   const [vatRate] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isLoading] = useState<boolean>(false);
+  const [errorMessage] = useState<string>("");
 
   // Calculate subtotal whenever the products change
   useEffect(() => {

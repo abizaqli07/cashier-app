@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { cookies } from "next/headers";
 import { type ReactNode } from "react";
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";

@@ -1,5 +1,7 @@
-import AllCategory from "./_components/all_category";
+export const dynamic = "force-dynamic";
+
 import { api, HydrateClient } from "~/trpc/server";
+import AllCategory from "./_components/all_category";
 
 const CategoryPage = async () => {
   void api.adminRoute.category.getAll.prefetch();

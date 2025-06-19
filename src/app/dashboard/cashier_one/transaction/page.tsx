@@ -1,7 +1,9 @@
+export const dynamic = "force-dynamic";
+
 import { api, HydrateClient } from "~/trpc/server";
 import AllTransaction from "./_components/all_transaction";
 
-const CategoryPage = async () => {
+const TransactionEmployeeOnePage = async () => {
   void api.employeeRoute.order.getAll.prefetch();
 
   return (
@@ -15,4 +17,4 @@ const CategoryPage = async () => {
   );
 };
 
-export default CategoryPage;
+export default TransactionEmployeeOnePage;

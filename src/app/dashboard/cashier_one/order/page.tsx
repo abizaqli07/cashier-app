@@ -31,7 +31,7 @@ import { DEFAULT_PAGE, DEFAULT_TOTAL_ITEMS } from "~/lib/default_params";
 import { api } from "~/trpc/react";
 import ProductCard from "./_components/product_card";
 
-const OrderPage = () => {
+const OrderStoreOnePage = () => {
   const [products, setProducts] = useState<CartProduct[]>();
   const [customer, setCustomer] = useState<string>("");
   const [method, setMethod] = useState<string>("Cash");
@@ -281,4 +281,4 @@ const OrderPage = () => {
   );
 };
 
-export default OrderPage;
+export default OrderStoreOnePage;

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { api, HydrateClient } from "~/trpc/server";
 import AllService from "./_components/all_service";
 
