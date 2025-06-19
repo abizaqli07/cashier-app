@@ -1,9 +1,10 @@
 "use client";
 
+import { format } from "date-fns";
 import Image from "next/image";
-import { Button } from "~/components/ui/button";
 import PriceFormat from "~/components/ui/price-format";
-import type { RouterOutputs } from "~/trpc/react";
+import { type RouterOutputs } from "~/trpc/react";
+import UpdateButton from "./update_button";
 
 interface ServiceCardProps {
   service: RouterOutputs["employeeRoute"]["order"]["getUncomplete"]["orders"][number];
@@ -18,7 +19,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
 
         <div className="absolute top-3 left-3 z-10">
           <div className="rounded-full bg-blue-600 px-2.5 py-1 text-xs font-bold text-white shadow-sm">
-            NEW
+            {service.service?.name}
           </div>
         </div>
 
@@ -58,15 +59,18 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
                 className="text-xl font-bold text-blue-600 dark:text-blue-400"
               />
             </div>
-            <p className="mt-1 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
-              {service.service?.name}
+            <p className="mt-1 line-clamp-2 text-xs text-gray-600 dark:text-gray-400">
+              {format(service.createdAt ?? new Date(), "dd MMMM yyyy")}
+            </p>
+            <p className="mt-1 line-clamp-2 text-sm text-gray-600 dark:text-gray-200">
+              {service.description}
             </p>
           </div>
         </div>
 
         {/* Bottom section with availability and buttons */}
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex gap-x-2">
             <p
               className={`text-xs font-medium ${service.status === "PROCESS" ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}
             >
@@ -75,19 +79,19 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
               ></span>
               {service.status === "PROCESS" ? "Processed" : "Pending"}
             </p>
+            <p
+              className={`text-xs font-medium ${service.payment === "PAID" ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}
+            >
+              <span
+                className={`mr-1 inline-block h-2 w-2 rounded-full ${service.payment === "PAID" ? "bg-green-500" : "bg-amber-500"}`}
+              ></span>
+              {service.payment === "PAID" ? "Already Paid" : "Pending"}
+            </p>
           </div>
 
           {/* Action buttons */}
           <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              className="border-gray-300 bg-white text-gray-700 transition-all hover:border-purple-500 hover:bg-purple-50 hover:text-purple-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-purple-500"
-            >
-              Add to cart
-            </Button>
-            <Button className="bg-purple-600 text-white transition-all hover:bg-purple-700">
-              Buy now
-            </Button>
+            <UpdateButton service={service} />
           </div>
         </div>
       </div>

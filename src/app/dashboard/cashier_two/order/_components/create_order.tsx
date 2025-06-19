@@ -37,6 +37,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { Textarea } from "~/components/ui/textarea";
 import { cn } from "~/lib/utils";
 import { CreateOrderServiceSchema } from "~/server/validator/order";
 import { api } from "~/trpc/react";
@@ -63,6 +64,7 @@ const CreateOrder = () => {
     resolver: zodResolver(CreateOrderServiceSchema),
     defaultValues: {
       name: "",
+      description: "",
       payment: "PENDING",
       status: "PROCESS",
       totalPrice: "",
@@ -103,6 +105,23 @@ const CreateOrder = () => {
                     <FormLabel>Customer Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Order description"
+                        className="resize-y"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

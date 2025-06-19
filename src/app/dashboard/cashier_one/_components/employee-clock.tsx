@@ -1,3 +1,5 @@
+"use client";
+
 import { IconClockPlay, IconClockStop } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -8,12 +10,15 @@ const EmployeeClock = () => {
   const utils = api.useUtils();
 
   const [recentClock] = api.employeeRoute.clocking.getOne.useSuspenseQuery();
+  const [clockId, setClockId] = useState<string>(recentClock.data?.id ?? "");
+
   const startClock = api.employeeRoute.clocking.startClock.useMutation({
-    async onSuccess() {
+    async onSuccess(data) {
       toast("Start Clock", {
         description: "Enjoy your work, good luck",
         position: "top-center",
       });
+      setClockId(data[0]?.id ?? "");
       await utils.employeeRoute.clocking.getAll.invalidate();
     },
     onError(error) {
@@ -74,14 +79,15 @@ const EmployeeClock = () => {
 
   const handleStop = () => {
     const stopTime = new Date();
-    setIsRunning(false);
-    stopClock.mutate({
-      clockId: recentClock.data?.id,
-      stop: stopTime,
-      totalHour: seconds,
-    });
+    const totalSeconds = seconds;
     setSeconds(0);
+    setIsRunning(false);
     setStartTime(null);
+    stopClock.mutate({
+      clockId: clockId,
+      stop: stopTime,
+      totalHour: totalSeconds,
+    });
   };
 
   return (

@@ -277,6 +277,7 @@ export const order = createTable("order", (d) => ({
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: d.varchar({ length: 255 }).notNull(),
+  description: d.text(),
   status: orderStatus("status").default("PROCESS").notNull(),
   payment: paymentStatus("payment").default("PAID"),
   totalPrice: d.numeric({ precision: 15, scale: 0 }).notNull(),

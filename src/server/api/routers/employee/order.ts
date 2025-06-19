@@ -4,6 +4,7 @@ import { order, product, productToOrder } from "~/server/db/schema";
 import {
   CreateOrderSchema,
   CreateOrderServiceSchema,
+  UpdateOrderServiceSchema,
 } from "~/server/validator/order";
 import { createTRPCRouter, protectedProcedure } from "../../trpc";
 import { ServiceFilterSchema } from "~/server/validator/service";
@@ -27,7 +28,7 @@ export const orderRouter = createTRPCRouter({
         const orders = await ctx.db.query.order.findMany({
           orderBy: [desc(order.createdAt)],
           with: {
-            service: true
+            service: true,
           },
           offset: offset,
           limit: limit,
@@ -129,6 +130,7 @@ export const orderRouter = createTRPCRouter({
           .insert(order)
           .values({
             name: input.name,
+            description: input.description,
             totalPrice: input.totalPrice,
             payment: input.payment,
             status: input.status,
@@ -138,6 +140,42 @@ export const orderRouter = createTRPCRouter({
           .returning();
 
         return createOrderService;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Insert failed, something wrong on the server",
+          cause: error,
+        });
+      }
+    }),
+  updateOrder: protectedProcedure
+    .input(UpdateOrderServiceSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const existed = await ctx.db.query.order
+          .findFirst({
+            where: (order, { eq }) => eq(order.id, input.orderId),
+          })
+          .execute();
+
+        if (!existed) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Order Not Found",
+          });
+        }
+
+        const orders = await ctx.db
+          .update(order)
+          .set({
+            payment: input.payment,
+            status: input.status,
+            method: input.method,
+          })
+          .where(eq(order.id, input.orderId))
+          .returning();
+
+        return orders;
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
