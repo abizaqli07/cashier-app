@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { orderStatus, paymentStatus } from "../db/schema";
 
+export const OrderIdSchema = z.object({
+  orderId: z.string().min(1, { message: "Order id required" }),
+});
+
 export const CreateOrderSchema = z.object({
   name: z.string().min(1, {
     message: "Name required for product",

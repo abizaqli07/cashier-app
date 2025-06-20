@@ -1,9 +1,10 @@
 "use client";
 
-import { IconCash, IconQrcode } from "@tabler/icons-react";
+import { IconCash, IconQrcode, IconReceiptDollar } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "~/components/ui/badge";
 
 import { Button } from "~/components/ui/button";
@@ -120,8 +121,13 @@ export const columns: ColumnDef<
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
               <DropdownMenuLabel>Order Actions</DropdownMenuLabel>
-              {/* <UpdateButton categoryId={id} name={name} />
-                <DeleteButton categoryId={id} /> */}
+              <Link
+                className="hover:bg-accent relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
+                href={`/dashboard/cashier_one/transaction/${id}`}
+              >
+                <IconReceiptDollar className="mr-2 h-4 w-4" />
+                Invoice
+              </Link>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

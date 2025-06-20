@@ -276,6 +276,7 @@ export const order = createTable("order", (d) => ({
     .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
+  invoiceId: d.serial().unique(),
   name: d.varchar({ length: 255 }).notNull(),
   description: d.text(),
   status: orderStatus("status").default("PROCESS").notNull(),
@@ -321,6 +322,7 @@ export const productToOrder = createTable(
       .varchar({ length: 255 })
       .notNull()
       .references(() => order.id, { onDelete: "cascade" }),
+    quantity: d.integer().default(1),
   }),
   (t) => [primaryKey({ columns: [t.productId, t.orderId] })],
 );

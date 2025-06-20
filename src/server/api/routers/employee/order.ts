@@ -4,6 +4,7 @@ import { order, product, productToOrder } from "~/server/db/schema";
 import {
   CreateOrderSchema,
   CreateOrderServiceSchema,
+  OrderIdSchema,
   UpdateOrderServiceSchema,
 } from "~/server/validator/order";
 import { createTRPCRouter, protectedProcedure } from "../../trpc";
@@ -69,6 +70,31 @@ export const orderRouter = createTRPCRouter({
         });
       }
     }),
+  getOne: protectedProcedure
+    .input(OrderIdSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        const oneOrder = await ctx.db.query.order.findFirst({
+          where: (order, { eq }) => eq(order.id, input.orderId),
+          with: {
+            products: {
+              with: {
+                product: true,
+              },
+            },
+            service: true,
+          },
+        });
+
+        return oneOrder;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something wrong on the server",
+          cause: error,
+        });
+      }
+    }),
   orderProduct: protectedProcedure
     .input(CreateOrderSchema)
     .mutation(async ({ ctx, input }) => {
@@ -108,6 +134,7 @@ export const orderRouter = createTRPCRouter({
               await ctx.db.insert(productToOrder).values({
                 orderId: orderId,
                 productId: exist.id,
+                quantity: data.quantity
               });
             }
           }
