@@ -1,6 +1,6 @@
 "use client";
 
-import { IconBuildingStore, IconLoader, IconUserX } from "@tabler/icons-react";
+import { IconBuildingStore, IconLoader, IconUserSearch, IconUserX } from "@tabler/icons-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
@@ -17,6 +17,7 @@ import { type RouterOutputs } from "~/trpc/react";
 import UpdateButton from "./update_button";
 import ChangePassword from "./change_password";
 import DeleteButton from "./delete_button";
+import Link from "next/link";
 
 export const columns: ColumnDef<
   RouterOutputs["adminRoute"]["employee"]["getAll"][number]
@@ -107,7 +108,7 @@ export const columns: ColumnDef<
         <Badge variant="outline" className="text-muted-foreground px-1.5">
           {clockingStatus ? (
             <>
-              <IconLoader className="fill-green-500 dark:fill-green-400" />
+              <IconLoader className="text-green-500 dark:text-green-400" />
               Active
             </>
           ) : (
@@ -168,6 +169,13 @@ export const columns: ColumnDef<
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
               <DropdownMenuLabel>Employee Actions</DropdownMenuLabel>
+              <Link
+                className="hover:bg-accent relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none"
+                href={`/dashboard/admin/employee/${row.original.id}`}
+              >
+                <IconUserSearch className="mr-2 h-4 w-4" />
+                View Detail
+              </Link>
               <UpdateButton data={row.original} />
               <ChangePassword employeeId={row.original.id} />
               <DeleteButton employeeId={row.original.id} />

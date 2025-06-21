@@ -25,6 +25,27 @@ export const employeeRouter = createTRPCRouter({
 
     return employees;
   }),
+  getOne: protectedProcedure
+    .input(UserIdSchema)
+    .query(async ({ ctx, input }) => {
+      const employees = await ctx.db.query.users.findFirst({
+        where: (users, { eq }) => eq(users.id, input.id),
+        with: {
+          clockings: true,
+        },
+      });
+
+      let totalClock = 0;
+      
+      employees?.clockings.map((data) => {
+        totalClock += (data.totalHour??0)
+      })
+
+      return {
+        employees: employees ?? null,
+        totalClock
+      };
+    }),
   create: protectedProcedure
     .input(RegisterSchema)
     .mutation(async ({ input, ctx }) => {
