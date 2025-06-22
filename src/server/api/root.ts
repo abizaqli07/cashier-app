@@ -1,7 +1,7 @@
-import { authRouter } from "~/server/api/routers/auth";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { adminRouter } from "./routers/admin";
 import { employeeRouter } from "./routers/employee";
+import { dashboardRouter } from "./routers/dashboard";
 
 /**
  * This is the primary router for your server.
@@ -9,7 +9,7 @@ import { employeeRouter } from "./routers/employee";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  auth: authRouter,
+  dashboard: dashboardRouter,
   adminRoute: adminRouter,
   employeeRoute: employeeRouter,
 });

@@ -84,7 +84,7 @@ function groupQuantityByDate(transactions: Transaction[]): QuantityByDate[] {
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("90d");
-  const [data] = api.adminRoute.dashboard.getOverview.useSuspenseQuery();
+  const [data] = api.dashboard.getOverview.useSuspenseQuery();
 
   const cleanData = data.map((order) => {
     return {
@@ -171,24 +171,24 @@ export function ChartAreaInteractive() {
               <linearGradient id="fillProduct" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-desktop)"
+                  stopColor="var(--color-productQuantity)"
                   stopOpacity={1.0}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-desktop)"
+                  stopColor="var(--color-productQuantity)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
               <linearGradient id="fillService" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-serviceQuantity)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-serviceQuantity)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -198,8 +198,8 @@ export function ChartAreaInteractive() {
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              tickMargin={2}
-              minTickGap={2}
+              tickMargin={8}
+              minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value as string);
                 return date.toLocaleDateString("en-US", {
@@ -230,14 +230,14 @@ export function ChartAreaInteractive() {
               dataKey="serviceQuantity"
               type="natural"
               fill="url(#fillService)"
-              stroke="var(--color-mobile)"
+              stroke="var(--color-serviceQuantity)"
               stackId="a"
             />
             <Area
               dataKey="productQuantity"
               type="natural"
               fill="url(#fillProduct)"
-              stroke="var(--color-desktop)"
+              stroke="var(--color-productQuantity)"
               stackId="a"
             />
           </AreaChart>

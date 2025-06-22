@@ -1,3 +1,5 @@
+"use client";
+
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
 
 import { Badge } from "~/components/ui/badge";
@@ -9,48 +11,94 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { currencyFormatter } from "~/lib/utils";
+import { api } from "~/trpc/react";
 
 export function SectionCards() {
+  const [data] = api.dashboard.getCardData.useSuspenseQuery();
+
+  let revenuePercent = 0;
+  if (data.totalRevenueTwo !== 0) {
+    revenuePercent =
+      ((data.totalRevenue - data.totalRevenueTwo) / data.totalRevenueTwo) * 100;
+  }
+
+  let customerPercent = 0;
+  if (data.totalCustomerTwo !== 0) {
+    customerPercent =
+      ((data.totalCustomer - data.totalCustomerTwo) / data.totalCustomerTwo) *
+      100;
+  }
+
+  let productPercent = 0;
+  if (data.totalProductTwo !== 0) {
+    productPercent =
+      ((data.totalProduct - data.totalProductTwo) / data.totalProductTwo) * 100;
+  }
+
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+            {currencyFormatter.format(data.totalRevenue)}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
+              {data.totalRevenue > data.totalRevenueTwo ? (
+                <IconTrendingUp />
+              ) : (
+                <IconTrendingDown />
+              )}
+              {revenuePercent}%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month <IconTrendingUp className="size-4" />
+            {data.totalRevenue > data.totalRevenueTwo ? (
+              <>
+                Trending up this month <IconTrendingUp className="size-4" />
+              </>
+            ) : (
+              <>
+                Trending down this period{" "}
+                <IconTrendingDown className="size-4" />
+              </>
+            )}
           </div>
-          <div className="text-muted-foreground">
-            Visitors for the last 6 months
-          </div>
+          <div className="text-muted-foreground">Revenue last months</div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>New Customers</CardDescription>
+          <CardDescription>Customers</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
+            {data.totalCustomer}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <IconTrendingDown />
-              -20%
+              {data.totalCustomer > data.totalCustomerTwo ? (
+                <IconTrendingUp />
+              ) : (
+                <IconTrendingDown />
+              )}
+              {customerPercent}%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period <IconTrendingDown className="size-4" />
+            {data.totalCustomer > data.totalCustomerTwo ? (
+              <>
+                Strong user retention <IconTrendingUp className="size-4" />
+              </>
+            ) : (
+              <>
+                Weak user retention <IconTrendingUp className="size-4" />
+              </>
+            )}
           </div>
           <div className="text-muted-foreground">
             Acquisition needs attention
@@ -59,42 +107,51 @@ export function SectionCards() {
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
+          <CardDescription>Product Sold</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
+            {data.totalProduct}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
+              {data.totalProduct > data.totalProductTwo ? (
+                <IconTrendingUp />
+              ) : (
+                <IconTrendingDown />
+              )}
+              {productPercent}%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention <IconTrendingUp className="size-4" />
+            {data.totalProduct > data.totalProductTwo ? (
+              <>
+                Trending up this month <IconTrendingUp className="size-4" />
+              </>
+            ) : (
+              <>
+                Trending down this period{" "}
+                <IconTrendingDown className="size-4" />
+              </>
+            )}
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
+          <div className="text-muted-foreground">
+            Product and service sold last month
+          </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
+          <CardDescription>Active Employee</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
+            {data.activeEmployee}
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +4.5%
-            </Badge>
-          </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase <IconTrendingUp className="size-4" />
+            Employee woorking on store
           </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
+          <div className="text-muted-foreground">Need attention</div>
         </CardFooter>
       </Card>
     </div>

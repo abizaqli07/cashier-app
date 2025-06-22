@@ -6,7 +6,8 @@ import { DataTable } from "./_components/data-table";
 import { SectionCards } from "./_components/section-cards";
 
 export default async function AdminDashboardPage() {
-  void api.adminRoute.dashboard.getOverview.prefetch();
+  void api.dashboard.getOverview.prefetch();
+  void api.dashboard.getCardData.prefetch()
 
   return (
     <div className="@container/main flex flex-1 flex-col gap-2">

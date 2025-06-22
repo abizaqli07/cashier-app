@@ -50,7 +50,7 @@ import { currencyFormatter } from "~/lib/utils";
 import { api, type RouterOutputs } from "~/trpc/react";
 
 export const columns: ColumnDef<
-  RouterOutputs["adminRoute"]["dashboard"]["getOverview"][number]
+  RouterOutputs["dashboard"]["getOverview"][number]
 >[] = [
   {
     accessorKey: "name",
@@ -306,7 +306,7 @@ export function DataTable() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [data] = api.adminRoute.dashboard.getOverview.useSuspenseQuery();
+  const [data] = api.dashboard.getOverview.useSuspenseQuery();
 
   const table = useReactTable({
     data,
