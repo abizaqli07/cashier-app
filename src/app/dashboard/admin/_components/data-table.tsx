@@ -25,11 +25,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, CalendarIcon, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
+import { CSVLink } from "react-csv";
+import type { DateRange } from "react-day-picker";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
+import { Calendar } from "~/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +41,11 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -306,8 +314,56 @@ export function DataTable() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+
+  // Date picker Components
+  const monthsAgo = new Date();
+  monthsAgo.setMonth(monthsAgo.getMonth() - 1);
+
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
+    from: monthsAgo,
+    to: new Date(),
+  });
   const [data] = api.dashboard.getOverview.useSuspenseQuery();
 
+  // React-CSV Functionality
+  const filteredTransaction = data
+    .filter((tx) => {
+      return (
+        tx.createdAt >= (dateRange?.from ?? monthsAgo) &&
+        tx.createdAt <= (dateRange?.to ?? new Date())
+      );
+    })
+    .map((arr) => ({
+      id: arr.invoiceId,
+      customer: arr.name,
+      description: arr.description,
+      totalProduct: arr.countProduct !== 0 ? arr.countProduct : 1,
+      totalPrice: arr.totalPrice,
+      employee: arr.user?.name,
+      employeePhone: arr.user?.phone ?? "Doest have phone number",
+      store: arr.serviceId ? "Store 2" : "Store 1",
+      status: arr.status,
+      paymentStatus: arr.payment,
+      paymentMethod: arr.method,
+      date: arr.createdAt,
+    }));
+
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "Customer Name", key: "customer" },
+    { label: "Order Description", key: "description" },
+    { label: "Total Product Order", key: "totalProduct" },
+    { label: "Total Price", key: "totalPrice" },
+    { label: "Employee Name", key: "employee" },
+    { label: "Employee Phone", key: "employeePhone" },
+    { label: "Store", key: "store" },
+    { label: "Order Status", key: "status" },
+    { label: "Payment Status", key: "paymentStatus" },
+    { label: "Payment Method", key: "paymentMethod" },
+    { label: "Date", key: "date" },
+  ];
+
+  // Data Table Functionality
   const table = useReactTable({
     data,
     columns,
@@ -324,16 +380,55 @@ export function DataTable() {
   });
 
   return (
-    <div className=" px-4 lg:px-6">
-      <div className="flex items-center justify-between py-4">
+    <div className="px-4 lg:px-6">
+      <div className="flex flex-col items-start justify-between gap-y-4 py-4 sm:flex-row sm:items-center">
         <Input
           placeholder="Filter transaction..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="mr-2 max-w-sm"
         />
+        <div className="flex items-center gap-x-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="data-[empty=true]:text-muted-foreground w-[280px] justify-start text-left font-normal"
+              >
+                <CalendarIcon />
+                {dateRange ? (
+                  <span>
+                    {format(dateRange?.from ?? monthsAgo, "PPP")} to{" "}
+                    {format(dateRange?.to ?? new Date(), "PPP")}
+                  </span>
+                ) : (
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={2}
+                className="rounded-lg border shadow-sm"
+              />
+            </PopoverContent>
+          </Popover>
+          <Button disabled={dateRange === undefined} variant={"outline"}>
+            <CSVLink
+              data={filteredTransaction}
+              headers={headers}
+              filename={`transaction_${dateRange?.from?.toLocaleDateString()}_to_${dateRange?.to?.toLocaleDateString()}.csv`}
+            >
+              Download
+            </CSVLink>
+          </Button>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
