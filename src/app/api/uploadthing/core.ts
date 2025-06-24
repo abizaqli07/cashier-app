@@ -8,6 +8,12 @@ export const ourFileRouter = {
   productImage: f({
     image: { maxFileSize: "4MB", maxFileCount: 1 },
   }).onUploadComplete(() => {}),
+  serviceOrder: f({
+    image: { maxFileSize: "4MB", maxFileCount: 1 },
+  }).onUploadComplete(() => {}),
+  userImage: f({
+    image: { maxFileSize: "4MB", maxFileCount: 1 },
+  }).onUploadComplete(() => {}),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

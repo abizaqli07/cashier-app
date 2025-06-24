@@ -12,8 +12,8 @@ export const UserIdSchema = z.object({
 });
 
 export const LoginSchema = z.object({
-  email: z.string().email({
-    message: "Email invalid",
+  email: z.string().min(1, {
+    message: "Email or username required",
   }),
   password: z.string().min(8, {
     message: "Password must be at least 8 character",
@@ -39,10 +39,12 @@ export const RegisterSchema = z
       .min(4, { message: "Username must be at least 4 char longs" })
       .max(20, { message: "Username cannot exceed 20 characters" })
       .regex(
-        /^[a-z0-9]{6,20}$/,
+        /^[a-z0-9]{4,20}$/,
         "Username must not contain special characters or uppercase letters",
       ),
     role: z.enum(roles),
+    image: z.string().url().nullable(),
+    phone: z.string().regex(phoneRegex, "Invalid Number!"),
   })
   .superRefine(({ password, confirmPassword }, ctx) => {
     if (password != confirmPassword) {

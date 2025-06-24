@@ -158,6 +158,7 @@ export const orderRouter = createTRPCRouter({
           .values({
             name: input.name,
             description: input.description,
+            image: input.image,
             totalPrice: input.totalPrice,
             payment: input.payment,
             status: input.status,

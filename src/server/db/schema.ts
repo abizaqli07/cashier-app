@@ -279,6 +279,7 @@ export const order = createTable("order", (d) => ({
   invoiceId: d.serial().unique(),
   name: d.varchar({ length: 255 }).notNull(),
   description: d.text(),
+  image: d.varchar({ length: 255 }),
   status: orderStatus("status").default("PROCESS").notNull(),
   payment: paymentStatus("payment").default("PAID"),
   totalPrice: d.numeric({ precision: 15, scale: 0 }).notNull(),

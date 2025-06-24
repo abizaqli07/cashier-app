@@ -250,7 +250,7 @@ export function DataTable() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [data] = api.dashboard.getOverview.useSuspenseQuery();
+  const [data] = api.dashboard.getProductOverview.useSuspenseQuery();
 
   const table = useReactTable({
     data,

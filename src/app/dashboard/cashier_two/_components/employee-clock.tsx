@@ -3,6 +3,16 @@
 import { IconClockPlay, IconClockStop } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { formatTime } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
@@ -93,13 +103,32 @@ const EmployeeClock = () => {
   return (
     <div>
       {isRunning ? (
-        <div
-          className="flex w-full items-center gap-2"
-          onClick={() => handleStop()}
-        >
-          <IconClockStop />
-          <span>{formatTime(seconds)}</span>
-        </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <div className="flex w-full items-center gap-2">
+              <IconClockStop />
+              <span>{formatTime(seconds)}</span>
+            </div>
+          </DialogTrigger>
+          <DialogContent className="scrollbar-hide max-h-[90vh] overflow-auto overflow-y-scroll sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Stop Clocking</DialogTitle>
+              <DialogDescription>
+                Are you sure want to stop your clock?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="destructive"
+                className="w-fit justify-self-end"
+                onClick={() => handleStop()}
+              >
+                Stop
+              </Button>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
       ) : (
         <div
           className="flex w-full items-center gap-2"

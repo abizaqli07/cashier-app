@@ -38,6 +38,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Textarea } from "~/components/ui/textarea";
+import { UploadDropzone } from "~/lib/uploadthing";
 import { cn } from "~/lib/utils";
 import { CreateOrderServiceSchema } from "~/server/validator/order";
 import { api } from "~/trpc/react";
@@ -121,6 +122,29 @@ const CreateOrder = () => {
                         placeholder="Order description"
                         className="resize-y"
                         {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="image"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Upload image product</FormLabel>
+                    <FormControl>
+                      <UploadDropzone
+                        className="ut-button:bg-primary ut-button:px-2 ut-button:mb-2 ut-label:text-primary"
+                        endpoint="serviceOrder"
+                        onClientUploadComplete={(res) => {
+                          toast("Upload Complete", {
+                            description: "Image successfully uploaded",
+                          });
+
+                          form.setValue("image", res[0]?.ufsUrl ?? "");
+                        }}
                       />
                     </FormControl>
                     <FormMessage />

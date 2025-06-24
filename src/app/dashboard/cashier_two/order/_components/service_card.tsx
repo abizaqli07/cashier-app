@@ -33,7 +33,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
           <div className="h-full w-full transition-all duration-500 group-hover:scale-105 group-hover:rotate-1">
             <div className="relative mx-auto h-full w-full rounded-lg drop-shadow-lg">
               <Image
-                src={"/images/placeholder_service.webp"}
+                src={service.image ?? "/images/placeholder_service.webp"}
                 alt="Image Placeholder"
                 fill
                 className="inset-0 z-20 object-cover"

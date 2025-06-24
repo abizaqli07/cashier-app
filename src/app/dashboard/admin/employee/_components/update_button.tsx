@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { UploadDropzone } from "~/lib/uploadthing";
 import { UpdateDataSchema } from "~/server/validator/auth";
 import { api, type RouterOutputs } from "~/trpc/react";
 
@@ -116,6 +117,30 @@ const UpdateButton = ({ data }: UpdateDataPropsInterface) => {
                     <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g, johndoe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="image"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Upload employee image</FormLabel>
+                    <FormControl>
+                      <UploadDropzone
+                        className="ut-button:bg-primary ut-button:px-2 ut-button:mb-2 ut-label:text-primary"
+                        endpoint="userImage"
+                        onClientUploadComplete={(res) => {
+                          toast("Upload Complete", {
+                            description: "Image successfully uploaded",
+                          });
+
+                          form.setValue("image", res[0]?.ufsUrl ?? "");
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

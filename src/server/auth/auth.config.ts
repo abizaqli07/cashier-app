@@ -10,7 +10,7 @@ const authDefaultConfig: NextAuthConfig = {
     Credentials({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text", placeholder: "Your email" },
+        email: { label: "Email or Username", type: "text", placeholder: "Your email or username" },
         password: {
           label: "Password",
           type: "password",
@@ -24,11 +24,11 @@ const authDefaultConfig: NextAuthConfig = {
           const { email, password } = validateFields.data;
 
           if (credentials?.email === undefined) {
-            throw new Error("Email not provided");
+            throw new Error("Email or username not provided");
           }
 
           const user = await db.query.users.findFirst({
-            where: (users, { eq }) => eq(users.email, email),
+            where: (users, { eq, or }) => or(eq(users.email, email), eq(users.username, email)),
           });
 
           if (!user) {

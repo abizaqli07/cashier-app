@@ -30,8 +30,11 @@ export const CreateOrderServiceSchema = z.object({
     message: "Name required for product",
   }),
   description: z.string().min(1, {
-    message: "Description required for product",
+    message: "Description required for service",
   }),
+  image: z.string().min(1, {
+    message: "Image required for service",
+  }).url(),
   status: z.enum(orderStatus.enumValues),
   payment: z.enum(paymentStatus.enumValues),
   totalPrice: z.string().min(1, { message: "Total price required" }),

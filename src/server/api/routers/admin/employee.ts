@@ -72,6 +72,8 @@ export const employeeRouter = createTRPCRouter({
           name: input.name,
           username: input.username,
           role: input.role,
+          image: input.image,
+          phone: input.phone
         })
         .returning();
 

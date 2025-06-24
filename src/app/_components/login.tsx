@@ -1,9 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
@@ -26,6 +28,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -69,6 +72,10 @@ export function LoginForm({
     });
   }
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
@@ -90,10 +97,10 @@ export function LoginForm({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Alamat Email</FormLabel>
+                      <FormLabel>Email Address or Username</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Email anda"
+                          placeholder="Your email or username"
                           autoComplete="email"
                           {...field}
                         />
@@ -108,13 +115,25 @@ export function LoginForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Password"
-                          autoComplete="current-password"
-                          {...field}
-                        />
+                      <FormControl className="relative">
+                        <div className="w-full">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            autoComplete="current-password"
+                            {...field}
+                          />
+                          <div
+                            onClick={togglePasswordVisibility}
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-700 focus:outline-none"
+                          >
+                            {showPassword ? (
+                              <IconEyeClosed className="h-5 w-5" />
+                            ) : (
+                              <IconEye className="h-5 w-5" />
+                            )}
+                          </div>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

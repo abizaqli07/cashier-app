@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import { PlusCircle } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type z } from "zod";
@@ -12,7 +14,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "~/components/ui/dialog";
 import {
   Form,
@@ -30,11 +32,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { UploadDropzone } from "~/lib/uploadthing";
 import { RegisterSchema } from "~/server/validator/auth";
 import { api } from "~/trpc/react";
 
 const CreateButton = () => {
   const context = api.useUtils();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prev) => !prev);
+  };
 
   const createEmployee = api.adminRoute.employee.create.useMutation({
     async onSuccess() {
@@ -58,6 +71,7 @@ const CreateButton = () => {
       confirmPassword: "",
       name: "",
       username: "",
+      phone: "62",
       role: "STOREONE",
     },
   });
@@ -125,12 +139,54 @@ const CreateButton = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Employee/Dummy Email</FormLabel>
+                    <FormLabel>Employee Email</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Email"
                         autoComplete="email"
                         {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Phone  */}
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone number</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Employee phone number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Image */}
+              <FormField
+                control={form.control}
+                name="image"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Upload employee image</FormLabel>
+                    <FormControl>
+                      <UploadDropzone
+                        className="ut-button:bg-primary ut-button:px-2 ut-button:mb-2 ut-label:text-primary"
+                        endpoint="userImage"
+                        onClientUploadComplete={(res) => {
+                          toast("Upload Complete", {
+                            description: "Image successfully uploaded",
+                          });
+
+                          form.setValue("image", res[0]?.ufsUrl ?? "");
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -174,13 +230,25 @@ const CreateButton = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Password"
-                        autoComplete="current-password"
-                        {...field}
-                      />
+                    <FormControl className="relative">
+                      <div className="w-full">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          autoComplete="current-password"
+                          {...field}
+                        />
+                        <div
+                          onClick={togglePasswordVisibility}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-700 focus:outline-none"
+                        >
+                          {showPassword ? (
+                            <IconEyeClosed className="h-5 w-5" />
+                          ) : (
+                            <IconEye className="h-5 w-5" />
+                          )}
+                        </div>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -193,13 +261,25 @@ const CreateButton = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password Confirmation</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Confirm password"
-                        autoComplete="current-password"
-                        {...field}
-                      />
+                    <FormControl className="relative">
+                      <div className="w-full">
+                        <Input
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Confirm Password"
+                          autoComplete="current-password"
+                          {...field}
+                        />
+                        <div
+                          onClick={toggleConfirmPasswordVisibility}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-700 focus:outline-none"
+                        >
+                          {showConfirmPassword ? (
+                            <IconEyeClosed className="h-5 w-5" />
+                          ) : (
+                            <IconEye className="h-5 w-5" />
+                          )}
+                        </div>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

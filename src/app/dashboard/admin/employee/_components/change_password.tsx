@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import { Pencil } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { type z } from "zod";
@@ -26,6 +28,8 @@ import { ChangePasswordSchema } from "~/server/validator/auth";
 import { api } from "~/trpc/react";
 
 const ChangePassword = ({ employeeId }: { employeeId: string }) => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
   const changePw = api.adminRoute.employee.changePassword.useMutation({
     onSuccess() {
       toast("Success", {
@@ -51,6 +55,10 @@ const ChangePassword = ({ employeeId }: { employeeId: string }) => {
   async function onSubmit(values: z.infer<typeof ChangePasswordSchema>) {
     changePw.mutate(values);
   }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const { isSubmitting } = form.formState;
 
@@ -81,13 +89,25 @@ const ChangePassword = ({ employeeId }: { employeeId: string }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>New Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Employee new password"
-                        autoComplete="current-password"
-                        {...field}
-                      />
+                    <FormControl className="relative">
+                      <div className="w-full">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Employee new password"
+                          autoComplete="current-password"
+                          {...field}
+                        />
+                        <div
+                          onClick={togglePasswordVisibility}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-700 focus:outline-none"
+                        >
+                          {showPassword ? (
+                            <IconEyeClosed className="h-5 w-5" />
+                          ) : (
+                            <IconEye className="h-5 w-5" />
+                          )}
+                        </div>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
