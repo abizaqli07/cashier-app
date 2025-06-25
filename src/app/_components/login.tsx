@@ -144,7 +144,11 @@ export function LoginForm({
                 </Button>
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
-                  <a href="#" className="underline underline-offset-4">
+                  <a
+                    href="https://wa.me/6282235451119"
+                    target="_blank"
+                    className="underline underline-offset-4"
+                  >
                     Contact Admin
                   </a>
                 </div>

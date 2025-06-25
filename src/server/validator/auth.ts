@@ -43,7 +43,7 @@ export const RegisterSchema = z
         "Username must not contain special characters or uppercase letters",
       ),
     role: z.enum(roles),
-    image: z.string().url().nullable(),
+    image: z.string().url().nullish(),
     phone: z.string().regex(phoneRegex, "Invalid Number!"),
   })
   .superRefine(({ password, confirmPassword }, ctx) => {

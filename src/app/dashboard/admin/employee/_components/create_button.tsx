@@ -175,7 +175,7 @@ const CreateButton = () => {
                 name="image"
                 render={() => (
                   <FormItem>
-                    <FormLabel>Upload employee image</FormLabel>
+                    <FormLabel>Upload employee image (optional)</FormLabel>
                     <FormControl>
                       <UploadDropzone
                         className="ut-button:bg-primary ut-button:px-2 ut-button:mb-2 ut-label:text-primary"

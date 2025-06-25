@@ -8,7 +8,7 @@ import {
   IconInnerShadowTop,
   IconSearch,
   IconSettings,
-  IconStopwatch
+  IconStopwatch,
 } from "@tabler/icons-react";
 
 import type { Session } from "next-auth";
@@ -87,7 +87,7 @@ export function AppSidebar({ session }: { session: Session | null }) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavSecondary className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser session={session} />

@@ -32,17 +32,6 @@ const DEFAULT_THEMES = [
   },
 ];
 
-const SCALED_THEMES = [
-  {
-    name: "Default",
-    value: "default-scaled",
-  },
-  {
-    name: "Blue",
-    value: "blue-scaled",
-  },
-];
-
 const MONO_THEMES = [
   {
     name: "Mono",
@@ -80,14 +69,6 @@ export function ThemeSelector() {
             ))}
           </SelectGroup>
           <SelectSeparator />
-          <SelectGroup>
-            <SelectLabel>Scaled</SelectLabel>
-            {SCALED_THEMES.map((theme) => (
-              <SelectItem key={theme.name} value={theme.value}>
-                {theme.name}
-              </SelectItem>
-            ))}
-          </SelectGroup>
           <SelectGroup>
             <SelectLabel>Monospaced</SelectLabel>
             {MONO_THEMES.map((theme) => (
