@@ -8,7 +8,6 @@ import { Card, CardContent } from "~/components/ui/card";
 import { formatTime } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { DataTable } from "./data-table";
-import { columns } from "./columns";
 
 const EmployeeDetailSection = ({ employeeId }: { employeeId: string }) => {
   const [data] = api.adminRoute.employee.getOne.useSuspenseQuery({
@@ -68,7 +67,7 @@ const EmployeeDetailSection = ({ employeeId }: { employeeId: string }) => {
               </div>
             </CardContent>
           </Card>
-          <DataTable columns={columns} data={data.employees?.clockings!} />
+          <DataTable data={data.employees?.clockings!} />
         </div>
       </div>
     </div>
