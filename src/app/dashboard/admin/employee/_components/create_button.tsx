@@ -160,7 +160,7 @@ const CreateButton = () => {
                     <FormLabel>Phone number</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
+                        type="text"
                         placeholder="Employee phone number"
                         {...field}
                       />

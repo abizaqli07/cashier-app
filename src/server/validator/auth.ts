@@ -44,7 +44,10 @@ export const RegisterSchema = z
       ),
     role: z.enum(roles),
     image: z.string().url().nullish(),
-    phone: z.string().regex(phoneRegex, "Invalid Number!"),
+    phone: z
+      .string()
+      .min(10, { message: "Invalid phone number" })
+      .regex(phoneRegex, "Invalid phone number"),
   })
   .superRefine(({ password, confirmPassword }, ctx) => {
     if (password != confirmPassword) {
@@ -68,10 +71,13 @@ export const UpdateDataSchema = z.object({
     .min(4, { message: "Username must be at least 4 char longs" })
     .max(20, { message: "Username cannot exceed 20 characters" })
     .regex(
-      /^[a-z0-9]{6,20}$/,
+      /^[a-z0-9]{4,20}$/,
       "Username must not contain special characters or uppercase letters",
     ),
-  phone: z.string().regex(phoneRegex, "Invalid Number!"),
+  phone: z
+    .string()
+    .min(10, { message: "Invalid phone number" })
+    .regex(phoneRegex, "Invalid Number!"),
   image: z.string().url().nullable(),
   role: z.enum(roles),
   status: z.enum(employmentStatus.enumValues),

@@ -155,7 +155,7 @@ const UpdateButton = ({ data }: UpdateDataPropsInterface) => {
                     <FormLabel>Phone number</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
+                        type="text"
                         placeholder="Employee phone number"
                         {...field}
                       />

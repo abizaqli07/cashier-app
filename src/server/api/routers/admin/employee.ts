@@ -1,5 +1,6 @@
-import { asc, desc, eq } from "drizzle-orm";
-import { createTRPCRouter, protectedProcedure } from "../../trpc";
+import { TRPCError } from "@trpc/server";
+import { hash } from "bcryptjs";
+import { desc, eq } from "drizzle-orm";
 import { clocking, users } from "~/server/db/schema";
 import {
   ChangePasswordSchema,
@@ -7,8 +8,7 @@ import {
   UpdateDataSchema,
   UserIdSchema,
 } from "~/server/validator/auth";
-import { TRPCError } from "@trpc/server";
-import { hash } from "bcryptjs";
+import { createTRPCRouter, protectedProcedure } from "../../trpc";
 
 export const employeeRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -20,7 +20,7 @@ export const employeeRouter = createTRPCRouter({
           limit: 1,
         },
       },
-      orderBy: [asc(users.name)],
+      orderBy: [desc(users.emailVerified)],
     });
 
     return employees;
